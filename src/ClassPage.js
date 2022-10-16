@@ -21,8 +21,36 @@ export default function ClassPage() {
   const [gridValues, setGridValues] = useState(gridValuesInitial);
 
   useEffect(() => {
+    // function populateGridWithOHSchedule(response) {
+    //   console.log(response)
+    //   let data = response.data
+    //   let tempGridValues = [...gridValues]
+    //   for (let i = 0; i < data.length; i++) {
+    //     let ohScheduleEntry = data[i]
+    //     let hms = ohScheduleEntry[4]
+    //     let target = new Date("1970-01-01T" + hms);
+    //     console.log("Hours:" ,target.getHours())
+    //     let hour = target.getHours()
+    //     let gridValuesIndexStart = (2*(hour - 8) * 5 ) + ohScheduleEntry[3]
+    //     hms = ohScheduleEntry[5]
+    //     target = new Date("1970-01-01T" + hms);
+    //     hour = target.getHours() + 1
+    //     let gridValuesIndexEnd = (2*(hour - 8) * 5 ) + ohScheduleEntry[3]
+    //     for (let j = gridValuesIndexStart; j < gridValuesIndexEnd; j = j + 5) {
+    //       tempGridValues[j] = 1
+    //     }
+    //   }
+    //   setGridValues(tempGridValues)
+    //   console.log('gridvalues', gridValues)
+    // }
+
+    function getRandomInt(min, max) {
+      min = Math.ceil(min);
+      max = Math.floor(max);
+      return Math.floor(Math.random() * (max - min + 1)) + min;
+    }
+
     function populateGrid(response) {
-      console.log(response)
       let data = response.data
       let tempGridValues = [...gridValues]
       for (let i = 0; i < data.length; i++) {
@@ -37,27 +65,67 @@ export default function ClassPage() {
         hour = target.getHours() + 1
         let gridValuesIndexEnd = (2*(hour - 8) * 5 ) + ohScheduleEntry[3]
         for (let j = gridValuesIndexStart; j < gridValuesIndexEnd; j = j + 5) {
-          tempGridValues[j] = 1
+          // tempGridValues[j] = 1
+          let hardcodedColorVal = getRandomInt(2, 4)
+          tempGridValues[j] = hardcodedColorVal
         }
-        //populate actual oh coloring/use data
       }
       setGridValues(tempGridValues)
-      console.log('gridvalues', gridValues)
+      //populateGrid with acutal oh statistics now
+      // data = response.data
+      // tempGridValues = [...gridValues]
+      // for (let i = 0; i < data.length; i++) {
+      //   let ohScheduleEntry = data[i]
+      //   let hms = ohScheduleEntry[4]
+      //   let target = new Date("1970-01-01T" + hms);
+      //   console.log("Hours:" ,target.getHours())
+      //   let hour = target.getHours()
+      //   let gridValuesIndexStart = (2*(hour - 8) * 5 ) + ohScheduleEntry[3]
+      //   hms = ohScheduleEntry[5]
+      //   target = new Date("1970-01-01T" + hms);
+      //   hour = target.getHours() + 1
+      //   let gridValuesIndexEnd = (2*(hour - 8) * 5 ) + ohScheduleEntry[3]
+      //   for (let j = gridValuesIndexStart; j < gridValuesIndexEnd; j = j + 5) {
+      //     // response = axios.get('http://127.0.0.1:5000/oh/stats/avg_wait_time', {
+      //     //   params: {
+      //     //     class_id: 12345,
+      //     //     oh_id:ohScheduleEntry[0],
+      //     //   }
+      //     // })
+      //     //hardcoding color 
+      //     let hardcodedColorVal = getRandomInt(2, 4)
+      //     tempGridValues[j] = hardcodedColorVal
+      //   }
+      // }
+      // setGridValues(tempGridValues)
     }
+    async function makeCall() {
+      let response = await axios.get('http://127.0.0.1:5000/schedule/cs162')
+      console.log('getting a response')
+      populateGrid(response);
+
+      // response = await axios.get('http://127.0.0.1:5000/oh/stats/avg_wait_time', {
+      //   params: {
+      //     class_id: 12345
+      //   }
+      // })
+      // console.log('getting a response')
+      // populateGridWithOHStatistics(response);
+      // .then(function (response) {
+      //   // handle success
+      //   console.log('getting a response')
+      //   populateGrid(response);
+      // })
+      // .catch(function (error) {
+      //   // handle error
+      //   console.log(error);
+      // })
+      // .then(function () {
+      //   // always executed
+      // });
+    }
+    makeCall()
     //Make a request for oh schedule given a class id
-    axios.get('http://127.0.0.1:5000/schedule/cs162')
-      .then(function (response) {
-        // handle success
-        console.log('getting a response')
-        populateGrid(response);
-      })
-      .catch(function (error) {
-        // handle error
-        console.log(error);
-      })
-      .then(function () {
-        // always executed
-      });
   }, [])
 
 
@@ -148,6 +216,12 @@ export default function ClassPage() {
                         Array.from({length:120}).map((_, index) => {
                           if (gridValues[index] === 1) {
                             return <Box w='100%' h='27px' bg='gray.200' border='1px' borderColor='gray.200' key={index}/>
+                          } else if (gridValues[index] === 2) {
+                            return <Box w='100%' h='27px' bg='green.200' border='1px' borderColor='gray.200' key={index}/>
+                          } else if (gridValues[index] === 3) {
+                            return <Box w='100%' h='27px' bg='yellow.200' border='1px' borderColor='gray.200' key={index}/>
+                          } else if (gridValues[index] === 4) {
+                            return <Box w='100%' h='27px' bg='red.200' border='1px' borderColor='gray.200' key={index}/>
                           } else {
                             return <Box w='100%' h='27px' bg='white.100' border='1px' borderColor='gray.200' key={index}/>
                           }
